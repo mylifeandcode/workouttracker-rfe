@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_BASE_URL } from "@/config";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -23,9 +22,15 @@ export default function LoginPage() {
 
       if (!response.ok) throw new Error("Invalid credentials");
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token); // Consider using httpOnly cookies instead
-      router.push("/dashboard"); // Redirect on successful login
+      //const data = await response.json();
+      const token = await response.text(); //My login endpoint is returning the token string only
+      
+      //localStorage.setItem("token", data.token); // Consider using httpOnly cookies instead
+      localStorage.setItem("token", token); // Consider using httpOnly cookies instead
+      console.log('token: ', token);
+      console.log('token from local storage: ', localStorage.getItem("token"));
+
+      router.push("/"); // Redirect on successful login
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     }
