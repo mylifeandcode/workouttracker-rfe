@@ -75,11 +75,13 @@
   }
 }
 
+/*
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
+*/
 
 html,
 body {
@@ -106,4 +108,8 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+h1 {
+  font-size: x-large;
 }
