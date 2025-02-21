@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "../context/AuthContext";
 import { API_BASE_URL } from "@/config";
 
 export default function LoginPage() {
@@ -9,8 +10,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { setToken } = useContext(AuthContext) || {};
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
 
     try {
@@ -25,10 +28,14 @@ export default function LoginPage() {
       //const data = await response.json();
       const token = await response.text(); //My login endpoint is returning the token string only
       
+      /*
       //localStorage.setItem("token", data.token); // Consider using httpOnly cookies instead
       localStorage.setItem("token", token); // Consider using httpOnly cookies instead
-      console.log('token: ', token);
+      console.log('token set in local storage: ', token);
       console.log('token from local storage: ', localStorage.getItem("token"));
+      */
+
+      setToken?.(token);
 
       router.push("/"); // Redirect on successful login
     } catch (err: any) {

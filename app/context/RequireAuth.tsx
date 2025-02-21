@@ -1,18 +1,26 @@
 "use client";
 
-import { useContext, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { token } = useContext(AuthContext) || {};
+  const auth = useContext(AuthContext);
   const router = useRouter();
+  const pathname = usePathname();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    if (!token) {
-      router.push("/login");
-    }
-  }, [token, router]);
+    if (auth === undefined) return; // Context is still initializing
 
-  return token ? children : null;
+    if (!auth?.token && pathname !== "/login") {
+      router.push("/login");
+    } else {
+      setCheckingAuth(false);
+    }
+  }, [auth?.token, pathname, router]);
+
+  if (checkingAuth) return <div>Loading...</div>; // Prevents premature redirect
+
+  return children;
 }
