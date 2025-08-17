@@ -15,6 +15,7 @@ interface AuthContextType {
   //login: (token: string) => void;
   setToken: (token: string) => void;
   logout: () => void;
+  user: User | null
 }
 
 
@@ -45,6 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userId: (decodedToken[USER_ID_KEY as keyof JwtPayload] as number),
         userPublicId: (decodedToken[USER_PUBLIC_ID_KEY as keyof JwtPayload] as string)
       }
+
+      console.log('SETTING USER INFO: ', userInfoFromToken);
 
       setUser(userInfoFromToken);
     }
@@ -78,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, setToken: updateToken, logout }}>
+    <AuthContext.Provider value={{ token, setToken: updateToken, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

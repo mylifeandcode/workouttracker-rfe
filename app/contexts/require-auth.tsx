@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AuthContext } from "@/app/context/AuthContext";
+import { AuthContext } from "@/app/contexts/auth";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const auth = useContext(AuthContext);

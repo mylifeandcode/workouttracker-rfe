@@ -2,7 +2,7 @@
 
 import type { Metadata } from "next";
 //import { Inter } from "next/font/google";
-import { AuthContext, AuthProvider } from "@/app/context/AuthContext";
+import { AuthContext, AuthProvider } from "@/app/contexts/auth";
 import "./globals.css";
 import Nav from "./ui/nav";
 import { useContext } from "react";

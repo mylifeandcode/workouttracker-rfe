@@ -1,9 +1,9 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import RequireAuth from "@/app/context/RequireAuth";
-import Nav from "./ui/nav";
+import RequireAuth from "@/app/contexts/require-auth";
 import UserOverview from "./ui/home/user-overview";
 import QuickActions from "./ui/home/quick-actions";
+import Workouts from "./ui/home/workouts";
 
 export default function Home() {
   return (
@@ -14,6 +14,9 @@ export default function Home() {
       <main className={styles.main}>
         <div className="flex-1">
           <UserOverview />
+        </div>
+        <div className="flex-1">
+          <Workouts />
         </div>
         <div className="flex-1">
           <QuickActions />
