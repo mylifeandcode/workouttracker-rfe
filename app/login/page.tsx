@@ -8,6 +8,7 @@ import { API_BASE_URL } from "@/config";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const { setToken } = useContext(AuthContext) || {};
@@ -17,6 +18,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
+      setLoggingIn(true);
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,6 +42,8 @@ export default function LoginPage() {
       router.push("/"); // Redirect on successful login
     } catch (err: any) {
       setError(err.message || "Something went wrong");
+    } finally {
+      setLoggingIn(false);
     }
   };
 
@@ -64,8 +68,18 @@ export default function LoginPage() {
           className="border p-2 w-full mb-4"
           required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
-          Login
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full" disabled={loggingIn}>
+          {loggingIn ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              Logging in...
+            </span>
+          ) : (
+            "Login"
+          )}
         </button>
       </form>
     </div>
