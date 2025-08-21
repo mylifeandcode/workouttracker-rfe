@@ -1,8 +1,7 @@
 'use client';
 
-import { ExecutedWorkoutSummaryDTO } from '@/app/ui/workouts/executed-workout-summary-dto'
 import { Suspense } from 'react'
-import { useWorkoutHistory } from '@/lib/hooks/workouts/useWorkoutHistory';
+import { useWorkoutHistory } from '@/lib/hooks/workouts/use-workout-history';
  
 export default function Page() {
   const { workoutHistory, isLoading, isError } = useWorkoutHistory();
