@@ -40,8 +40,8 @@ export default function LoginPage() {
       setToken?.(token);
 
       router.push("/"); // Redirect on successful login
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoggingIn(false);
     }
@@ -53,7 +53,7 @@ export default function LoginPage() {
         <h2 className="text-xl font-bold mb-4">Login</h2>
         {error && <p className="text-red-500">{error}</p>}
         <input
-          type="string"
+          type="text"
           placeholder="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}

@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-api-models": "openapi-ts"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.3",
@@ -18,6 +19,7 @@
     "swr": "^2.3.6"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "^0.90.10",
     "@types/node": "^20",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",

@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userPublicId: (decodedToken[USER_PUBLIC_ID_KEY as keyof JwtPayload] as string)
       }
 
-      console.log('SETTING USER INFO: ', userInfoFromToken);
+      //console.log('SETTING USER INFO: ', userInfoFromToken);
 
       setUser(userInfoFromToken);
     }

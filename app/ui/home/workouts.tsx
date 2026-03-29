@@ -5,13 +5,13 @@ export default function Workouts() {
     <div className="widget">
       <h3>Workouts</h3>
       <div className="flex flex-col items-center gap-2 mt-4 w-full max-w-xs mx-auto">
-        <Link href="/workouts/select" className="w-full">
-          <button className="w-full bg-blue-600 text-white px-4 py-2 rounded">Start a new Workout</button>
+        <Link href="/workouts/select" className="w-full block bg-blue-600 text-white px-4 py-2 rounded text-center">
+          Start a new Workout
         </Link>
-        <Link href="/workouts/select-planned" className="w-full">
-          <button className="w-full bg-blue-900 text-white px-4 py-2 rounded">Start a Pre-Planned Workout</button>
+        <Link href="/workouts/select-planned" className="w-full block bg-blue-900 text-white px-4 py-2 rounded text-center">
+          Start a Pre-Planned Workout
         </Link>
       </div>
     </div>
-  );  
+  );
 }
