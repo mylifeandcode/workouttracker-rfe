@@ -13,12 +13,12 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (auth === undefined) return; // Context is still initializing
 
-    if (!auth?.token && pathname !== "/login") {
+    if (!auth?.accessToken && pathname !== "/login") {
       router.push("/login");
     } else {
       setCheckingAuth(false);
     }
-  }, [auth?.token, pathname, router]);
+  }, [auth?.accessToken, pathname, router]);
 
   if (checkingAuth) return <div>Loading...</div>; // Prevents premature redirect
 

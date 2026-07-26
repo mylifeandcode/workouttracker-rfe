@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "../contexts/auth";
 import { API_BASE_URL } from "@/config";
+import { AuthTokenResultDTO } from "@/lib/api/types.gen";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -11,7 +12,7 @@ export default function LoginPage() {
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setToken } = useContext(AuthContext) || {};
+  const { setAccessToken, setRefreshToken } = useContext(AuthContext) || {};
 
   const handleSubmit = async (e: React.FormEvent) => {
     
@@ -27,8 +28,7 @@ export default function LoginPage() {
 
       if (!response.ok) throw new Error("Invalid credentials");
 
-      //const data = await response.json();
-      const token = await response.text(); //My login endpoint is returning the token string only
+      const tokenResponse: AuthTokenResultDTO = await response.json();
       
       /*
       //localStorage.setItem("token", data.token); // Consider using httpOnly cookies instead
@@ -37,7 +37,8 @@ export default function LoginPage() {
       console.log('token from local storage: ', localStorage.getItem("token"));
       */
 
-      setToken?.(token);
+      setAccessToken?.(tokenResponse.accessToken);
+      setRefreshToken?.(tokenResponse.refreshToken);
 
       router.push("/"); // Redirect on successful login
     } catch (err: unknown) {

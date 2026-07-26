@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function Nav() {
-  const { token, logout, user } = useAuth();
+  const { accessToken: token, logout, user } = useAuth();
 
   return (
     <ul>

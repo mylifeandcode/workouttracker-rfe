@@ -13,7 +13,7 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
 
   return (
     <>
-      {auth.token && <Nav />}
+      {auth.accessToken && <Nav />}
       {children}
     </>
   );

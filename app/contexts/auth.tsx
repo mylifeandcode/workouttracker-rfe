@@ -11,9 +11,10 @@ interface User {
 }
 
 interface AuthContextType {
-  token: string | null;
-  //login: (token: string) => void;
-  setToken: (token: string) => void;
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+  refreshToken: string | null;
+  setRefreshToken: (token: string | null) => void;
   logout: () => void;
   user: User | null
 }
@@ -23,7 +24,8 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
@@ -34,10 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Load token from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      const decodedToken = jwtDecode<JwtPayload>(storedToken);
+    const storedAccessToken = localStorage.getItem("accessToken");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+
+    if (storedAccessToken) {
+      setAccessToken(storedAccessToken);
+      const decodedToken = jwtDecode<JwtPayload>(storedAccessToken);
 
       //TODO: Refactor. This is ugly. There's gotta be a better way.
       const userInfoFromToken = {
@@ -51,6 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(userInfoFromToken);
     }
+
+    if (storedRefreshToken) {
+      setRefreshToken(storedRefreshToken);
+    }
+
     setLoading(false);
   }, []);
 
@@ -62,26 +71,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   */
 
   const logout = () => {
-    setToken(null);
-    localStorage.removeItem("token");
+    setAccessToken(null);
+    setRefreshToken(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   };
 
   // Function to update token on login
-  const updateToken = (newToken: string | null) => {
+  const updateAccessToken = (newToken: string | null) => {
     if (newToken) {
-      localStorage.setItem("token", newToken);
+      localStorage.setItem("accessToken", newToken);
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
     }
-    setToken(newToken);
-  };  
+    setAccessToken(newToken);
+  };
+  
+  const updateRefreshToken = (newToken: string | null) => {
+    if (newToken) {
+      localStorage.setItem("refreshToken", newToken);
+    } else {
+      localStorage.removeItem("refreshToken");
+    }
+    setRefreshToken(newToken);
+  };
+
 
   if (loading) {
     return <div>Loading...</div>; // Prevents RequireAuth from redirecting too early
   }
 
   return (
-    <AuthContext.Provider value={{ token, setToken: updateToken, logout, user }}>
+    <AuthContext.Provider 
+      value={{ 
+        accessToken: accessToken, 
+        setAccessToken: updateAccessToken, 
+        refreshToken: refreshToken, 
+        setRefreshToken: updateRefreshToken, 
+        logout, 
+        user }}
+      >
       {children}
     </AuthContext.Provider>
   );
