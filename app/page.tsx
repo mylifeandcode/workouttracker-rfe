@@ -1,4 +1,3 @@
-import Image from "next/image";
 import styles from "./page.module.css";
 import RequireAuth from "@/app/contexts/require-auth";
 import UserOverview from "./ui/home/user-overview";
