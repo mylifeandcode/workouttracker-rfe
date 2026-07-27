@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, useMemo, ReactNode } from "react";
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 interface User {
@@ -19,7 +19,25 @@ interface AuthContextType {
   user: User | null
 }
 
+const NAME_KEY = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+const ROLE_KEY = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+const USER_ID_KEY = "UserID";
+const USER_PUBLIC_ID_KEY = "UserPublicID";
 
+// The user is a pure function of the access token, so we derive it during
+// render instead of storing it in state and syncing it via an effect. This
+// keeps `user` consistent with `accessToken` on every update (e.g. login),
+// not just on mount.
+function decodeUser(token: string | null): User | null {
+  if (!token) return null;
+  const claims = jwtDecode<JwtPayload>(token);
+  return {
+    name: claims[NAME_KEY as keyof JwtPayload] as string,
+    role: claims[ROLE_KEY as keyof JwtPayload] as string,
+    userId: claims[USER_ID_KEY as keyof JwtPayload] as number,
+    userPublicId: claims[USER_PUBLIC_ID_KEY as keyof JwtPayload] as string,
+  };
+}
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -27,33 +45,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
 
-  const NAME_KEY = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
-  const ROLE_KEY = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-  const USER_ID_KEY = "UserID";
-  const USER_PUBLIC_ID_KEY = "UserPublicID";
+  const user = useMemo(() => decodeUser(accessToken), [accessToken]);
 
-  // Load token from localStorage on mount
+  // Hydrate tokens from localStorage on mount. `user` is derived from
+  // `accessToken` above, so there is nothing to set here for it.
   useEffect(() => {
     const storedAccessToken = localStorage.getItem("accessToken");
     const storedRefreshToken = localStorage.getItem("refreshToken");
 
     if (storedAccessToken) {
       setAccessToken(storedAccessToken);
-      const decodedToken = jwtDecode<JwtPayload>(storedAccessToken);
-
-      //TODO: Refactor. This is ugly. There's gotta be a better way.
-      const userInfoFromToken = {
-        name: (decodedToken[NAME_KEY as keyof JwtPayload] as string),
-        role: (decodedToken[ROLE_KEY as keyof JwtPayload] as string),
-        userId: (decodedToken[USER_ID_KEY as keyof JwtPayload] as number),
-        userPublicId: (decodedToken[USER_PUBLIC_ID_KEY as keyof JwtPayload] as string)
-      }
-
-      //console.log('SETTING USER INFO: ', userInfoFromToken);
-
-      setUser(userInfoFromToken);
     }
 
     if (storedRefreshToken) {
