@@ -26,8 +26,8 @@ export default function Page() {
             {workoutHistory?.results?.map((workout) => (
               <tr key={workout.id}>
                 <td>{workout.name}</td>
-                <td>{workout.startDateTime}</td>
-                <td>{workout.endDateTime}</td>
+                <td>{workout.startDateTime?.toLocaleString()}</td>
+                <td>{workout.endDateTime?.toLocaleString()}</td>
                 <td>{workout.journal}</td>
               </tr>
             ))}
