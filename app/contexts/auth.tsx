@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, useEffect, useMemo, ReactNode } from "react";
+import { createContext, useState, useEffect, useMemo, useCallback, ReactNode } from "react";
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 interface User {
@@ -65,54 +65,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  /*
-  const login = (newToken: string) => {
-    setToken(newToken);
-    localStorage.setItem("token", newToken);
-  };
-  */
-
-  const logout = () => {
+  // These callbacks only touch the (stable) state setters and localStorage,
+  // so an empty dependency array keeps their identity stable across renders.
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-  };
+  }, []);
 
   // Function to update token on login
-  const updateAccessToken = (newToken: string | null) => {
+  const updateAccessToken = useCallback((newToken: string | null) => {
     if (newToken) {
       localStorage.setItem("accessToken", newToken);
     } else {
       localStorage.removeItem("accessToken");
     }
     setAccessToken(newToken);
-  };
-  
-  const updateRefreshToken = (newToken: string | null) => {
+  }, []);
+
+  const updateRefreshToken = useCallback((newToken: string | null) => {
     if (newToken) {
       localStorage.setItem("refreshToken", newToken);
     } else {
       localStorage.removeItem("refreshToken");
     }
     setRefreshToken(newToken);
-  };
+  }, []);
 
+  // Memoize the context value so consumers of useAuth() only re-render when
+  // one of these actually changes, not on every AuthProvider render.
+  const value = useMemo<AuthContextType>(() => ({
+    accessToken,
+    setAccessToken: updateAccessToken,
+    refreshToken,
+    setRefreshToken: updateRefreshToken,
+    logout,
+    user,
+  }), [accessToken, refreshToken, user, updateAccessToken, updateRefreshToken, logout]);
 
   if (loading) {
     return <div>Loading...</div>; // Prevents RequireAuth from redirecting too early
   }
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        accessToken: accessToken, 
-        setAccessToken: updateAccessToken, 
-        refreshToken: refreshToken, 
-        setRefreshToken: updateRefreshToken, 
-        logout, 
-        user }}
-      >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
