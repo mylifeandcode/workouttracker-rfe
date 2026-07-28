@@ -4,11 +4,11 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import Nav from "./ui/nav";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { accessToken } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
-      {accessToken && <Nav />}
+      {isAuthenticated && <Nav />}
       {children}
     </>
   );

@@ -1,24 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { accessToken } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [checkingAuth, setCheckingAuth] = useState(true);
 
+  // Auth state is known synchronously (decoded server-side and passed into the
+  // provider), so there's no loading gate: authed users see children with no
+  // flash, unauthenticated users are redirected. (Replaced by middleware in a
+  // later BFF phase.)
   useEffect(() => {
-    if (!accessToken && pathname !== "/login") {
-      router.push("/login");
-    } else {
-      setCheckingAuth(false);
+    if (!isAuthenticated && pathname !== "/login") {
+      router.replace("/login");
     }
-  }, [accessToken, pathname, router]);
+  }, [isAuthenticated, pathname, router]);
 
-  if (checkingAuth) return <div>Loading...</div>; // Prevents premature redirect
-
-  return children;
+  return isAuthenticated ? children : null;
 }

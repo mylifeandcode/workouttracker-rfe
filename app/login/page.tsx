@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { API_BASE_URL } from "@/config";
-import { AuthTokenResultDTO } from "@/lib/api/types.gen";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -12,7 +9,6 @@ export default function LoginPage() {
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setAccessToken, setRefreshToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     
@@ -20,7 +16,7 @@ export default function LoginPage() {
 
     try {
       setLoggingIn(true);
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -28,12 +24,8 @@ export default function LoginPage() {
 
       if (!response.ok) throw new Error("Invalid credentials");
 
-      const tokenResponse: AuthTokenResultDTO = await response.json();
-
-      setAccessToken(tokenResponse.accessToken);
-      setRefreshToken(tokenResponse.refreshToken);
-
-      router.push("/"); // Redirect on successful login
+      router.replace("/"); // Redirect on successful login
+      router.refresh(); // re-render server components so the new session user is applied
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
