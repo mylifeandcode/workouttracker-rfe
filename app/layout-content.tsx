@@ -1,19 +1,14 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "./contexts/auth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import Nav from "./ui/nav";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
-  const auth = useContext(AuthContext);
-
-  if (auth === undefined) {
-    return <div>Loading...</div>; // Prevents render issues
-  }
+  const { accessToken } = useAuth();
 
   return (
     <>
-      {auth.accessToken && <Nav />}
+      {accessToken && <Nav />}
       {children}
     </>
   );

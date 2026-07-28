@@ -1,8 +1,8 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthContext } from "../contexts/auth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { API_BASE_URL } from "@/config";
 import { AuthTokenResultDTO } from "@/lib/api/types.gen";
 
@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setAccessToken, setRefreshToken } = useContext(AuthContext) || {};
+  const { setAccessToken, setRefreshToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     
@@ -29,16 +29,9 @@ export default function LoginPage() {
       if (!response.ok) throw new Error("Invalid credentials");
 
       const tokenResponse: AuthTokenResultDTO = await response.json();
-      
-      /*
-      //localStorage.setItem("token", data.token); // Consider using httpOnly cookies instead
-      localStorage.setItem("token", token); // Consider using httpOnly cookies instead
-      console.log('token set in local storage: ', token);
-      console.log('token from local storage: ', localStorage.getItem("token"));
-      */
 
-      setAccessToken?.(tokenResponse.accessToken);
-      setRefreshToken?.(tokenResponse.refreshToken);
+      setAccessToken(tokenResponse.accessToken);
+      setRefreshToken(tokenResponse.refreshToken);
 
       router.push("/"); // Redirect on successful login
     } catch (err: unknown) {
