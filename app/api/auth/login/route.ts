@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { API_BASE_URL } from "@/config";
-import { ACCESS_COOKIE, REFRESH_COOKIE, cookieOptions } from "@/lib/auth/session";
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/constants";
+import { cookieOptions } from "@/lib/auth/session";
 
 /**
  * BFF login: exchange credentials for the JWT pair with the .NET API, then store

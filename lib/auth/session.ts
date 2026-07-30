@@ -2,15 +2,14 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { ACCESS_COOKIE } from "./constants";
 
 /**
  * Server-only auth utilities. The BFF owns the JWT pair as httpOnly cookies;
- * this module is the single source of truth for their names, attributes, and
- * for decoding the current user from the access-token cookie.
+ * this module handles their attributes and decoding the current user from the
+ * access-token cookie. Cookie names live in ./constants (Edge-safe) — import
+ * them from there directly rather than through this module.
  */
-
-export const ACCESS_COOKIE = "wt_access";
-export const REFRESH_COOKIE = "wt_refresh";
 
 // The .NET API embeds identity in full XML-schema / Microsoft claim URIs plus
 // custom UserID / UserPublicID claims.

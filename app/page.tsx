@@ -1,12 +1,11 @@
 import styles from "./page.module.css";
-import RequireAuth from "@/app/contexts/require-auth";
 import UserOverview from "./ui/home/user-overview";
 import QuickActions from "./ui/home/quick-actions";
 import Workouts from "./ui/home/workouts";
 
 export default function Home() {
   return (
-    <RequireAuth>
+    <>
       <h3 className="m-2">
         Welcome to Workout Tracker
       </h3>
@@ -21,6 +20,6 @@ export default function Home() {
           <QuickActions />
         </div>
       </main>
-    </RequireAuth>
+    </>
   );
 }

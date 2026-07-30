@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { API_BASE_URL } from "@/config";
-import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/session";
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "@/lib/auth/constants";
 
 /**
  * BFF logout: best-effort revoke the refresh token server-side, then clear both
