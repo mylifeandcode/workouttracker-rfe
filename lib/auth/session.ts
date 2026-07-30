@@ -5,10 +5,9 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { ACCESS_COOKIE } from "./constants";
 
 /**
- * Server-only auth utilities. The BFF owns the JWT pair as httpOnly cookies;
- * this module handles their attributes and decoding the current user from the
- * access-token cookie. Cookie names live in ./constants (Edge-safe) — import
- * them from there directly rather than through this module.
+ * Server-only auth utilities. Decodes the current user from the access-token
+ * cookie. Cookie names and options live in ./constants (Edge-safe); import those
+ * from there directly rather than through this module.
  */
 
 // The .NET API embeds identity in full XML-schema / Microsoft claim URIs plus
@@ -49,19 +48,4 @@ export function decodeUser(token: string | undefined | null): SessionUser | null
 export async function getSessionUser(): Promise<SessionUser | null> {
   const store = await cookies();
   return decodeUser(store.get(ACCESS_COOKIE)?.value);
-}
-
-// Both cookies live for the refresh-token lifetime (7 days), NOT the 120-min
-// access lifetime: the proxy must still hold the (possibly expired) access token
-// to send to /auth/refresh, which uses it to identify the user.
-const SEVEN_DAYS_SECONDS = 60 * 60 * 24 * 7;
-
-export function cookieOptions() {
-  return {
-    httpOnly: true,
-    sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: SEVEN_DAYS_SECONDS,
-  };
 }

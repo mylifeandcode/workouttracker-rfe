@@ -1,12 +1,17 @@
-'use client';
+import { redirect } from "next/navigation";
+import { serverApiFetch } from "@/lib/auth/server-fetch";
+import { getApiExecutedWorkoutResponseTransformer } from "@/lib/api/transformers.gen";
 
-import { useWorkoutHistory } from '@/lib/hooks/workouts/use-workout-history';
+// Server Component: fetches on the server with the session cookie's token, so no
+// data-fetching JS ships to the browser. Middleware guarantees a fresh token, so a
+// 401 here means the session is genuinely gone.
+export default async function Page() {
+  const res = await serverApiFetch("executedworkout?firstRecord=0&pageSize=10");
 
-export default function Page() {
-  const { workoutHistory, isLoading, error } = useWorkoutHistory();
+  if (res.status === 401) redirect("/login");
+  if (!res.ok) throw new Error(`Failed to load workout history (HTTP ${res.status})`);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading workout history</div>;
+  const history = await getApiExecutedWorkoutResponseTransformer(await res.json());
 
   return (
     <>
@@ -21,7 +26,7 @@ export default function Page() {
           </tr>
         </thead>
         <tbody>
-          {workoutHistory?.results?.map((workout) => (
+          {history?.results?.map((workout) => (
             <tr key={workout.id}>
               <td>{workout.name}</td>
               <td>{workout.startDateTime?.toLocaleString()}</td>
@@ -32,5 +37,5 @@ export default function Page() {
         </tbody>
       </table>
     </>
-  )
+  );
 }
